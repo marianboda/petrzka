@@ -1,0 +1,24 @@
+{
+  "name": "petrzka",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node scrape.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marianboda/petrzka.git"
+  },
+  "author": "Marian Boda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marianboda/petrzka/issues"
+  },
+  "homepage": "https://github.com/marianboda/petrzka#readme",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "node-fetch": "^1.5.3"
+  }
+}
