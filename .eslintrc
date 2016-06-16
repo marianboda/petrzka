@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "semi": [2, "never"],
+    "curly": 0,
+    "arrow-body-style": 0,
+    "no-use-before-define": 0,
+    "no-unused-vars": 1,
+    "comma-dangle": 0
+
+  }
+}
