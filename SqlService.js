@@ -11,6 +11,15 @@ const SQLService = {
     return run(prep, [rec.id, rec.title, rec.link, moment().format('YYYY-MM-DD HH:mm:ss')])
   },
 
+  addAds: (recs) => {
+    recs.forEach(i => {
+      SQLService.addAd(i).catch(e => {
+        if (e.code !== 'SQLITE_CONSTRAINT')
+          console.error(e)
+      })
+    })
+  },
+
   updateAd: (rec) => {
     const keys = Object.keys(rec)
       .filter(i => i !== 'id')
@@ -23,7 +32,7 @@ const SQLService = {
   },
 
   getAds: () => {
-    return all('SELECT * FROM ad')
+    return all('SELECT * FROM ad ORDER BY id DESC')
   },
 }
 

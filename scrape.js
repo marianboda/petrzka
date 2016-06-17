@@ -34,22 +34,19 @@ const parseList = (body) => {
 
 const getAll = () => {
   const worker = (task, cb) => {
-    getPage(task.page).then(r => {
-      return r.text()
-    }).then(parseList)
-    .then((r) => {
-      r.forEach(i => {
-        sql.addAd(i).then(() => { adsCount += 1 }).catch((e) => console.log('err', e))
+    getPage(task.page)
+      .then(r => r.text())
+      .then(parseList)
+      .then(r => {
+        sql.addAds(r)
+        if (r.length > 0)
+          q.push({ page: task.page + 1 })
+        cb(null, r)
       })
-      if (r.length > 0) {
-        q.push({ page: task.page + 1 })
-      }
-      cb(null, r)
-    })
-    .catch(err => {
-      console.error('error', err)
-      cb(err)
-    })
+      .catch(err => {
+        console.error('error', err)
+        cb(err)
+      })
   }
   const q = async.queue(worker)
   q.push({ page: 1 })
@@ -85,7 +82,7 @@ const scrapeAd = (rec) => {
     .then(body => {
       const ad = parseAd(body)
       ad.id = rec.id
-      // console.log(ad)
+      console.log(ad)
       sql.updateAd(ad)
       resolve(ad)
     })
@@ -97,40 +94,29 @@ const scrapeAd = (rec) => {
   return p
 }
 
-const adScraper = (task, cb) => {
-  scrapeAd(task).then((res) => {
-    newAds.push(res)
-    console.log(adQ.length())
-    cb(null)
-  }).catch(e => cb(e))
-}
-
-const adQ = async.queue(adScraper)
-adQ.drain = () => {
-  console.log('==============================================================')
-  const conds = _.countBy(newAds, i => i.condition)
-  console.log('Stavy:', conds)
-  const streets = _.countBy(newAds, i => i.street)
-  console.log('Ulice:', streets)
-  const energies = _.countBy(newAds, i => i.energy)
-  console.log('Energie:', energies)
-  const areas = _.countBy(newAds, i => i.area)
-  console.log('Plochy:', areas)
-}
-
-sql.getAds().then(r => {
-  ads = r
-  return true
-})
-.then(() => {
-  if (ads.length === 0) {
-    return getAll()
+const getAllDetails = () => {
+  const adScraper = (task, cb) => {
+    scrapeAd(task).then((res) => {
+      newAds.push(res)
+      cb(null)
+    }).catch(e => cb(e))
   }
-  const unpAds = _.take(ads.filter(i => i.description == null), 100)
-  adQ.push(unpAds)
-  console.log(unpAds.length, ads.length)
-  return null
-})
+  const adQ = async.queue(adScraper)
+  adQ.drain = () => {
+    console.log('==============================================================')
+    console.log('Stavy:', _.countBy(newAds, i => i.condition))
+    console.log('Ulice:', _.countBy(newAds, i => i.location))
+    console.log('Energie:', _.countBy(newAds, i => i.price_energy))
+    console.log('Plochy:', _.countBy(newAds, i => i.area))
+    console.log('==============================================================')
+  }
+  sql.getAds()
+    .then((ads) => {
+      const unpAds = _.take(ads.filter(i => i.description == null), 100)
+      adQ.push(unpAds)
+      console.log(unpAds.length, '/',  ads.length)
+      return null
+    })
+}
 
-
-// getAll()
+module.exports = { getAllDetails, getAll }

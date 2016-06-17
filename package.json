@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node scrape.js",
-    "init": "rm -f db.sqlite; sqlite3 db.sqlite < scripts/dbschema.sql"
+    "init": "rm -f db.sqlite; sqlite3 db.sqlite < scripts/dbschema.sql",
+    "server": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -27,14 +28,20 @@
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
     "node-fetch": "^1.5.3",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
     "sqlite3": "^3.1.4"
   },
   "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
     "eslint": "^2.12.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.8.1",
     "eslint-plugin-jsx-a11y": "^1.5.1",
     "eslint-plugin-react": "^5.1.1",
-    "nodemon": "^1.9.2"
+    "nodemon": "^1.9.2",
+    "webpack": "^1.13.1"
   }
 }
