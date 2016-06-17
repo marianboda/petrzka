@@ -8,7 +8,10 @@ CREATE TABLE "ad"(
   "type" Text,
   "condition" Text,
   "time_added" Text,
-  "locality" Text,
+  "location" Text,
   "price" Real,
-  "price_info" Text
+  "price_energy" Real,
+  "price_info" Text,
+  "agency" Text,
+  "agent" Text
 );

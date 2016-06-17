@@ -7,9 +7,19 @@ const all = Promise.promisify(db.all, { context: db })
 
 const SQLService = {
   addAd: (rec) => {
-    // console.log('should add', rec.id)
     const prep = 'INSERT INTO ad (id, title, link, time_added) VALUES (?,?,?,?)'
     return run(prep, [rec.id, rec.title, rec.link, moment().format('YYYY-MM-DD HH:mm:ss')])
+  },
+
+  updateAd: (rec) => {
+    const keys = Object.keys(rec)
+      .filter(i => i !== 'id')
+    const keyTemplates = keys
+      .map(i => `${i}=?`)
+      .join(', ')
+    const vals = keys.map(i => rec[i])
+    const query = `UPDATE ad SET ${keyTemplates} WHERE id="${rec.id}"`
+    return run(query, vals)
   },
 
   getAds: () => {

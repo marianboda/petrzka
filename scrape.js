@@ -70,10 +70,12 @@ const parseAd = (body) => {
   const street = removeDia($('.street').text()).replace(/[,]?\s[0-9]+$/g, '').toLowerCase()
   const condition = removeDia($('span:contains("Stav")').next().text()).toLowerCase()
   let area = $('span:contains("Úžitková plocha")').next().text().replace(' m²', '')
-  if (area === '')
-    area = 0
-  area = Number(area)
-  return { price, energy, street, condition, area }
+  area = (area === '') ? 0 : Number(area)
+  const description = $('.popis').text().trim()
+  const agency = $('.kontaktne-udaje a').first().text().trim()
+  const agent = $('.brokerContacts > .bold').text().trim()
+  return { price, price_energy: energy, location: street,
+    condition, area, description, agency, agent, type: '3bdr-apartment' }
 }
 
 const scrapeAd = (rec) => {
@@ -82,7 +84,9 @@ const scrapeAd = (rec) => {
     fetch(rec.link).then(r => r.text())
     .then(body => {
       const ad = parseAd(body)
+      ad.id = rec.id
       // console.log(ad)
+      sql.updateAd(ad)
       resolve(ad)
     })
     .catch(e => {
@@ -98,7 +102,6 @@ const adScraper = (task, cb) => {
     newAds.push(res)
     console.log(adQ.length())
     cb(null)
-
   }).catch(e => cb(e))
 }
 
@@ -112,20 +115,21 @@ adQ.drain = () => {
   const energies = _.countBy(newAds, i => i.energy)
   console.log('Energie:', energies)
   const areas = _.countBy(newAds, i => i.area)
-  console.log('Energie:', areas)
+  console.log('Plochy:', areas)
 }
 
 sql.getAds().then(r => {
   ads = r
   return true
 })
-.then(r => {
-  const unpAds = _.take(ads.filter(i => i.desc == null), 1)
+.then(() => {
+  if (ads.length === 0) {
+    return getAll()
+  }
+  const unpAds = _.take(ads.filter(i => i.description == null), 100)
   adQ.push(unpAds)
   console.log(unpAds.length, ads.length)
-  // if (ads.length > 0) {
-  //   scrapeAd(ads[0])
-  // }
+  return null
 })
 
 
