@@ -6,7 +6,8 @@
     "arrow-body-style": 0,
     "no-use-before-define": 0,
     "no-unused-vars": 1,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "newline-per-chained-call": 0
 
   }
 }

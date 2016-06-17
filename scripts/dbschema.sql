@@ -6,7 +6,8 @@ CREATE TABLE "ad"(
   "area" Real,
   "property_area" Real,
   "type" Text,
-  "date_added" Text,
+  "condition" Text,
+  "time_added" Text,
   "locality" Text,
   "price" Real,
   "price_info" Text
