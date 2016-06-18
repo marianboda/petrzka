@@ -32,7 +32,7 @@ const SQLService = {
   },
 
   getAds: () => {
-    return all('SELECT * FROM ad ORDER BY id DESC')
+    return all('SELECT * FROM ad WHERE rating>-1 ORDER BY id DESC')
   },
 }
 

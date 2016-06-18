@@ -13,5 +13,6 @@ CREATE TABLE "ad"(
   "price_energy" Real,
   "price_info" Text,
   "agency" Text,
-  "agent" Text
+  "agent" Text,
+  "rating" Integer DEFAULT 0
 );
