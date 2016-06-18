@@ -64,7 +64,7 @@ const parseAd = (body) => {
   else
     energy = Number(energy.replace(/[^0-9]/g, ''))
 
-  const street = removeDia($('.street').text()).replace(/[,]?\s[0-9]+$/g, '').toLowerCase()
+  const street = removeDia($('.street').text()).replace(/[,]?\s[0-9]+$/g, '').toLowerCase().trim()
   const condition = removeDia($('span:contains("Stav")').next().text()).toLowerCase()
   let area = $('span:contains("Úžitková plocha")').next().text().replace(' m²', '')
   area = (area === '') ? 0 : Number(area)
