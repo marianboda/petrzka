@@ -29,6 +29,7 @@ const App = React.createClass({
 
     const detailPane = (!selectedAd) ? null : (<div style={adDetailStyles}>
       <h2>{selectedAd.title}</h2>
+      <a href={selectedAd.link} target="_blank">[LINK]</a>
     </div>)
 
     return (<div style={containerStyles}>
