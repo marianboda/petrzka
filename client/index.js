@@ -6,6 +6,7 @@ const containerStyles = { display: 'flex', width: '100%', height: '100%' }
 const adListStyles = { flex: '1 1 300px' }
 const adDetailStyles = { flex: '1 1 300px' }
 const adRowStyles = { cursor: 'pointer' }
+const isNumeric = (n) => !isNaN(parseFloat(n)) && isFinite(n)
 
 const App = React.createClass({
   getInitialState() {
@@ -32,15 +33,19 @@ const App = React.createClass({
       <a href={selectedAd.link} target="_blank">[LINK]</a>
     </div>)
 
+
+
     return (<div style={containerStyles}>
       <div style={adListStyles}>
         <table>
           {ads.map(i => {
+            const price = i.price +
+              (isNumeric(i.price_energy) && i.price_energy >= 0 ? i.price_energy : 0)
             return (<tr style={adRowStyles} key={i.id} onClick={((id) => () => this.clickHandler(id))(i.id)}>
               <td>{i.id}</td>
               <td>{i.location}</td>
               <td>{i.title}</td>
-              <td>{i.price + i.price_energy}</td>
+              <td>{price}</td>
             </tr>)
           })
           }

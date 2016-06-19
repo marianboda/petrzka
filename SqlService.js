@@ -7,7 +7,7 @@ const all = Promise.promisify(db.all, { context: db })
 
 const SQLService = {
   addAd: (rec) => {
-    const prep = 'INSERT INTO ad (id, title, link, time_added) VALUES (?,?,?,?)'
+    const prep = 'INSERT INTO house (id, title, link, time_added) VALUES (?,?,?,?)'
     return run(prep, [rec.id, rec.title, rec.link, moment().format('YYYY-MM-DD HH:mm:ss')])
   },
 
@@ -27,12 +27,12 @@ const SQLService = {
       .map(i => `${i}=?`)
       .join(', ')
     const vals = keys.map(i => rec[i])
-    const query = `UPDATE ad SET ${keyTemplates} WHERE id="${rec.id}"`
+    const query = `UPDATE house SET ${keyTemplates} WHERE id="${rec.id}"`
     return run(query, vals)
   },
 
   getAds: () => {
-    return all('SELECT * FROM ad WHERE rating>-1 ORDER BY id DESC')
+    return all('SELECT * FROM house WHERE rating>-1 ORDER BY id DESC')
   },
 }
 

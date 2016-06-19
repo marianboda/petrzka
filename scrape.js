@@ -11,10 +11,17 @@ let ads = []
 let newAds = []
 
 const makeUrl = (page = 1) => {
-  const url = 'http://www.nehnutelnosti.sk/bratislava-v-petrzalka/3-izbove-byty/prenajom'
-  if (page === 1)
+  // const url = 'http://www.nehnutelnosti.sk/bratislava-v-petrzalka/3-izbove-byty/prenajom'
+  const url = 'http://www.nehnutelnosti.sk/bernolakovo/rodinne-domy/predaj'
+
+  let params = []
+  params.push({ key: 'param7', value: '12' })
+  if (page > 1)
+    params.push({ key: 'page', value: page })
+  if (params.length === 0)
     return url
-  return `${url}?p[page]=${page}`
+
+  return `${url}?${params.map(i => `p[${i.key}]=${i.value}`).join('&')}`
 }
 
 const getPage = (page) => fetch(makeUrl(page))
@@ -39,6 +46,7 @@ const getAll = () => {
       .then(parseList)
       .then(r => {
         sql.addAds(r)
+        console.log(r.map(i => i.title).join("\n"))
         if (r.length > 0)
           q.push({ page: task.page + 1 })
         cb(null, r)
@@ -56,23 +64,17 @@ const parseAd = (body) => {
   const $ = cheerio.load(body)
   const price = $('#data-price').text().replace('\r\n', '').replace('\r\n', '')
     .replace(/ /g, '').replace(/[^0-9]/g, '')
-  let energy = $('.energy').text()
-  if (energy === 'Zahrnuté v cene')
-    energy = 0
-  else if (energy === 'Neuvedené')
-    energy = -1
-  else
-    energy = Number(energy.replace(/[^0-9]/g, ''))
-
   const street = removeDia($('.street').text()).replace(/[,]?\s[0-9]+$/g, '').toLowerCase().trim()
   const condition = removeDia($('span:contains("Stav")').next().text()).toLowerCase()
   let area = $('span:contains("Úžitková plocha")').next().text().replace(' m²', '')
   area = (area === '') ? 0 : Number(area)
+  let propertyArea = $('span:contains("Plocha pozemku")').next().text().replace(' m²', '')
+  propertyArea = (propertyArea === '') ? 0 : Number(propertyArea)
   const description = $('.popis').text().trim()
   const agency = $('.kontaktne-udaje a').first().text().trim()
   const agent = $('.brokerContacts > .bold').text().trim()
-  return { price, price_energy: energy, location: street,
-    condition, area, description, agency, agent, type: '3bdr-apartment' }
+  return { price, location: street, property_area: propertyArea,
+    condition, area, description, agency, agent, type: 'house' }
 }
 
 const scrapeAd = (rec) => {
@@ -83,7 +85,7 @@ const scrapeAd = (rec) => {
       const ad = parseAd(body)
       ad.id = rec.id
       console.log(ad)
-      sql.updateAd(ad)
+      // sql.updateAd(ad)
       resolve(ad)
     })
     .catch(e => {
@@ -106,7 +108,6 @@ const getAllDetails = () => {
     console.log('==============================================================')
     console.log('Stavy:', _.countBy(newAds, i => i.condition))
     console.log('Ulice:', _.countBy(newAds, i => i.location))
-    console.log('Energie:', _.countBy(newAds, i => i.price_energy))
     console.log('Plochy:', _.countBy(newAds, i => i.area))
     console.log('==============================================================')
   }

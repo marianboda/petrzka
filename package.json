@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node scrape.js",
     "init": "rm -f db.sqlite; sqlite3 db.sqlite < scripts/dbschema.sql",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
