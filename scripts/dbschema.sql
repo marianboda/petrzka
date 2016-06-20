@@ -14,6 +14,7 @@ CREATE TABLE "ad"(
   "price_info" Text,
   "agency" Text,
   "agent" Text,
+  "images" Text,  
   "rating" Integer DEFAULT 0
 );
 
@@ -32,5 +33,6 @@ CREATE TABLE "house"(
   "price_info" Text,
   "agency" Text,
   "agent" Text,
+  "images" Text,
   "rating" Integer DEFAULT 0
 );
