@@ -6,10 +6,6 @@ const removeDia = require('diacritics').remove
 const async = require('async')
 const sql = require('./SqlService')
 
-let adsCount = 0
-let ads = []
-let newAds = []
-
 const makeUrl = (page = 1) => {
   const url = 'http://www.nehnutelnosti.sk/bratislava-v-petrzalka/3-izbove-byty/prenajom'
   if (page === 1)
@@ -71,7 +67,12 @@ const parseAd = (body) => {
   const description = $('.popis').text().trim()
   const agency = $('.kontaktne-udaje a').first().text().trim()
   const agent = $('.brokerContacts > .bold').text().trim()
-  return { price, price_energy: energy, location: street,
+  const image = $('#galeryElementJS > a').first().attr('data-href')
+  const otherImages = $('#male a').map((i, el) => el.attribs['data-href']).toArray()
+  const images = [].concat(image, otherImages).join(' ')
+  console.log(images)
+
+  return { price, price_energy: energy, location: street, images,
     condition, area, description, agency, agent, type: '3bdr-apartment' }
 }
 
@@ -82,7 +83,7 @@ const scrapeAd = (rec) => {
     .then(body => {
       const ad = parseAd(body)
       ad.id = rec.id
-      console.log(ad)
+      console.log(ad.id)
       sql.updateAd(ad)
       resolve(ad)
     })
@@ -95,6 +96,7 @@ const scrapeAd = (rec) => {
 }
 
 const getAllDetails = () => {
+  let newAds = []
   const adScraper = (task, cb) => {
     scrapeAd(task).then((res) => {
       newAds.push(res)
@@ -112,7 +114,8 @@ const getAllDetails = () => {
   }
   sql.getAds()
     .then((ads) => {
-      const unpAds = _.take(ads.filter(i => i.description == null), 100)
+      const unpAds = _.take(ads.filter(i => i.images == null), 100)
+      // const unpAds = ads.filter(i => i.id === 'i2448859')
       adQ.push(unpAds)
       console.log(unpAds.length, '/',  ads.length)
       return null
