@@ -4,6 +4,7 @@ const Promise = require('bluebird')
 const _ = require('lodash')
 const removeDia = require('diacritics').remove
 const async = require('async')
+const moment = require('moment')
 const sql = require('./SqlService')
 
 const makeUrl = (page = 1) => {
@@ -28,6 +29,8 @@ const parseList = (body) => {
   return list.toArray()
 }
 
+let liveAds = []
+
 const getAll = () => {
   const worker = (task, cb) => {
     getPage(task.page)
@@ -35,6 +38,7 @@ const getAll = () => {
       .then(parseList)
       .then(r => {
         sql.addAds(r)
+        liveAds = liveAds.concat(r.map(i => i.id))
         if (r.length > 0)
           q.push({ page: task.page + 1 })
         cb(null, r)
@@ -45,6 +49,17 @@ const getAll = () => {
       })
   }
   const q = async.queue(worker)
+  q.drain = () => {
+    sql.getAds().then((ads) => {
+      let stored = ads.filter(i => i.time_deleted == null).map(i => i.id)
+      let dead = stored.filter(i => !liveAds.includes(i))
+      let time_deleted = moment().format('YYYY-MM-DD HH:mm:ss')
+      dead.forEach(i => {
+        console.log('deleting ID: ', i)
+        sql.updateAd({id: i, time_deleted}).catch(e => console.error(e))
+      })
+    })
+  }
   q.push({ page: 1 })
 }
 

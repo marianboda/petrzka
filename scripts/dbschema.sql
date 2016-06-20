@@ -15,7 +15,8 @@ CREATE TABLE "ad"(
   "agency" Text,
   "agent" Text,
   "images" Text,
-  "rating" Integer DEFAULT 0
+  "rating" Integer DEFAULT 0,
+  "time_deleted" Text
 );
 
 CREATE TABLE "house"(
@@ -34,5 +35,6 @@ CREATE TABLE "house"(
   "agency" Text,
   "agent" Text,
   "images" Text,
-  "rating" Integer DEFAULT 0
+  "rating" Integer DEFAULT 0,
+  "time_deleted" Text
 );
