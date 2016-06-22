@@ -35,11 +35,15 @@ sql.getAds().then(ads => {
         const url = item.split(' ')[1]
         const dir = './static/img/' + id
         mkdirp(dir)
+        if (fs.existsSync(dir+'/'+hash(url)+'.jpg')) {
+          console.log(dir+'/'+hash(url)+'.jpg exists')
+          return resolve()
+        }
         downloadFile(url, dir+'/'+hash(url)+'.jpg').then(() => {
           console.log(hash(url)+'.jpg done')
           resolve()
         })
-      }, 5000)
+      }, 0)
     })
   }).then(() => console.log('all done'))
 })

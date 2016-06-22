@@ -3,7 +3,7 @@ const app = express()
 const sql = require('./SqlService')
 
 app.get('/api/ads', (req, res) => {
-  sql.getAds().then((r) => {
+  sql.getLiveAds().then((r) => {
     res.status(200).send(JSON.stringify(r))
   })
 })
