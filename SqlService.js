@@ -32,9 +32,9 @@ const SQLService = {
   },
 
   getAds: () => {
-    return all('SELECT * FROM ad ORDER BY id DESC')
+    return all('SELECT * FROM ad ORDER BY time_added DESC, id DESC')
   },
-  
+
   getLiveAds: () => {
     return all('SELECT * FROM ad WHERE time_deleted is NULL ORDER BY id DESC')
   },

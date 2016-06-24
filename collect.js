@@ -1,14 +1,8 @@
 const fetch = require('node-fetch')
 const fs = require('fs')
 const Promise = require('bluebird')
-const crypto = require('crypto')
 const mkdirp = require('mkdirp')
-
-const hash = (str) => {
-  const sha = crypto.createHash('sha256')
-  sha.update(str)
-  return sha.digest('hex').substring(0,16)
-}
+const hash = require('./utils').hash
 
 const downloadFile = (url, path) => {
   return fetch(url)
