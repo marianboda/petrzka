@@ -2,11 +2,11 @@ import React from 'react'
 import DOM from 'react-dom'
 import { nogo, maybego } from '../config'
 import { hash } from '../utils'
+import AdListRenderer from './components/AdListRenderer'
 
-const containerStyles = { display: 'flex', width: '100%', height: '100%' }
-const adListStyles = { flex: '1 1 300px' }
+const containerStyles = { display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }
+const adListStyles = { flex: '1 1 300px', height: '100%', overflow: 'auto' }
 const adDetailStyles = { flex: '1 1 300px' }
-const adRowStyles = { cursor: 'pointer' }
 
 const App = React.createClass({
   getInitialState() {
@@ -43,20 +43,15 @@ const App = React.createClass({
       </div>)
     }
 
+    const adElements = ads.map(i => (<AdListRenderer
+        data={i}
+        onClick={((id) => () => this.clickHandler(id))(i.id)}
+        selected={(i.id === this.state.selectedId)}
+      />))
+
     return (<div style={containerStyles}>
       <div style={adListStyles}>
-        <table>
-          {ads.map(i => {
-            let style = (i.id === this.state.selectedId) ? {...adRowStyles, backgroundColor: '#DDEEFF'} : adRowStyles
-            return (<tr style={style} key={i.id} onClick={((id) => () => this.clickHandler(id))(i.id)}>
-              <td>{i.id}</td>
-              <td>{i.location}</td>
-              <td>{i.title}</td>
-              <td>{i.price + i.price_energy}</td>
-            </tr>)
-          })
-          }
-        </table>
+        {adElements}
       </div>
       {detailPane}
     </div>)
