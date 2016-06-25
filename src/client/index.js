@@ -5,8 +5,8 @@ import { hash } from '../utils'
 import AdListRenderer from './components/AdListRenderer'
 
 const containerStyles = { display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }
-const adListStyles = { flex: '1 1 300px', height: '100%', overflow: 'auto' }
-const adDetailStyles = { flex: '1 1 300px' }
+const adListStyles = { flex: '0 0 300px', height: '100%', overflow: 'auto', backgroundColor: '#DDD' }
+const adDetailStyles = { flex: '1 1 300px', height: '100%', overflow: 'auto', padding: 10 }
 
 const App = React.createClass({
   getInitialState() {
@@ -34,10 +34,11 @@ const App = React.createClass({
       const images = selectedAd.images.split(' ')
       detailPane = (!selectedAd) ? null : (<div style={adDetailStyles}>
         <h2><a href={selectedAd.link} target="_blank">{selectedAd.title}</a></h2>
-        <div>
+        <div>{selectedAd.description}</div>
+        <div >
           { images.map(i => {
             const src = `img/${selectedAd.id}/${hash(i)}.jpg`
-            return (<img height="150px" src={src} />)
+            return (<img height="250px" src={src} />)
           }) }
         </div>
       </div>)
