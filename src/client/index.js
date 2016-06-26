@@ -16,17 +16,15 @@ const App = React.createClass({
   },
   componentWillUpdate(nextProps, nextState) {
     const node = this.refs.adList
-    // const currentScrollTop = node.scrollTop
-    // const currentScrollHeight = node.scrollHeight
     const listHeight = node.offsetHeight
     const ad = DOM.findDOMNode(this.refs[nextState.selectedId])
     if (ad) {
       const adTop = ad.getBoundingClientRect().top
       const adBottom = ad.getBoundingClientRect().bottom
       if (adTop < 0)
-        console.log('need to scroll up')
+        node.scrollTop += adTop
       if (adBottom > listHeight)
-        console.log('need to scroll down')
+        node.scrollTop += adBottom - listHeight
     }
   },
   componentWillMount() {
