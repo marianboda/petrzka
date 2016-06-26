@@ -1,5 +1,7 @@
 import React from 'react'
 import DOM from 'react-dom'
+import Mousetrap from 'mousetrap'
+import { findIndex } from 'lodash'
 import { nogo, maybego } from '../config'
 import { hash } from '../utils'
 import AdListRenderer from './components/AdListRenderer'
@@ -12,20 +14,53 @@ const App = React.createClass({
   getInitialState() {
     return { ads: [], selectedId: 'i2477748' }
   },
+  componentWillUpdate(nextProps, nextState) {
+    const node = this.refs.adList
+    // const currentScrollTop = node.scrollTop
+    // const currentScrollHeight = node.scrollHeight
+    const listHeight = node.offsetHeight
+    const ad = DOM.findDOMNode(this.refs[nextState.selectedId])
+    if (ad) {
+      const adTop = ad.getBoundingClientRect().top
+      const adBottom = ad.getBoundingClientRect().bottom
+      if (adTop < 0)
+        console.log('need to scroll up')
+      if (adBottom > listHeight)
+        console.log('need to scroll down')
+    }
+  },
   componentWillMount() {
-    const ads = fetch('/api/ads')
-    .then(r => r.json())
-    .then(r => {
-      this.setState({ ads: r })
+    Mousetrap.bind('up', (e) => {
+      e.preventDefault(); console.log('UP')
+      if (this.state.selectedId) {
+        const index = findIndex(this.state.ads, { id: this.state.selectedId })
+        if (index >= 1 && index < this.state.ads.length)
+          this.setState({selectedId: this.state.ads[index - 1].id})
+      }
     })
+    Mousetrap.bind('down',  (e) => {
+      e.preventDefault(); console.log('DOWN')
+      if (this.state.selectedId) {
+        const index = findIndex(this.state.ads, { id: this.state.selectedId })
+        if (index >= 0 && index < this.state.ads.length - 1)
+          this.setState({selectedId: this.state.ads[index + 1].id})
+      }
+    })
+
+    const ads = fetch('/api/ads')
+      .then(r => r.json())
+      .then(r => {
+        this.setState({ ads: r, selectedId: (r[0]) ? r[0].id : null})
+      })
   },
   clickHandler(id) {
     this.setState({ selectedId: id })
   },
+  onKeyDown(e) {
+    console.log(e)
+  },
   render() {
     const ads = this.state.ads
-
-    console.log((ads.filter(i => i.id !== this.state.selectedId)).length)
     const selectedAd = (ads.filter(i => i.id === this.state.selectedId))[0]
 
     let images = []
@@ -45,13 +80,14 @@ const App = React.createClass({
     }
 
     const adElements = ads.map(i => (<AdListRenderer
+        ref={i.id}
         data={i}
         onClick={((id) => () => this.clickHandler(id))(i.id)}
         selected={(i.id === this.state.selectedId)}
       />))
 
     return (<div style={containerStyles}>
-      <div style={adListStyles}>
+      <div ref="adList" style={adListStyles}>
         {adElements}
       </div>
       {detailPane}
