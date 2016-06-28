@@ -10,7 +10,7 @@ const daysOldStyle = {position: 'absolute', right: 10, bottom: 10, color: '#369'
 export default React.createClass({
   render() {
     const { data, selected, onClick } = this.props
-    let style = (selected) ? {...defStyle, backgroundColor: '#AACCFF'} : defStyle
+    let style = { ...defStyle }
     let days = moment().diff(moment(data.time_added, 'YYYY-MM-DD HH:mm:ss'), 'days')
     if (days == 0) {
       days = 'today'
@@ -19,6 +19,15 @@ export default React.createClass({
     } else {
       days = days + ' days ago'
     }
+
+    if (!selected && data.time_deleted > '2015') {
+      style.backgroundColor = '#FFCCCC'
+    } else if (!selected) {
+      style.backgroundColor = '#DDD'
+    } else {
+       style.backgroundColor = (data.time_deleted > '2015') ? '#FF9999' : '#AACCFF'
+    }
+
     return (<div style={style} key={data.id} onClick={((id) => () => onClick(id))(data.id)}>
       <div style={{marginRight: 60}}>{data.title}</div>
       <span>{data.location}</span>
