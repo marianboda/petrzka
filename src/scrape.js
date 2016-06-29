@@ -31,36 +31,56 @@ const parseList = (body) => {
 
 let liveAds = []
 
+const deleteDead = (live) => {
+  sql.getAds().then((ads) => {
+    let stored = ads.filter(i => i.time_deleted == null).map(i => i.id)
+    let dead = stored.filter(i => !live.includes(i))
+    let time_deleted = moment().format('YYYY-MM-DD HH:mm:ss')
+    dead.forEach(i => {
+      console.log('deleting ID: ', i)
+      sql.updateAd({id: i, time_deleted}).catch(e => console.error(e))
+    })
+  })
+}
+
+const parsePage = (page) => {
+  return getPage(page)
+    .then(r => r.text())
+    .then(parseList)
+    .then((r) => ({ records: r, page }))
+}
+
+const storeRecs = (res) => {
+  const { records, page } = res
+  console.log(records.map(i => i.id).join(', '))
+  sql.addAds(records)
+  liveAds = liveAds.concat(records.map(i => i.id))
+  return { records, page }
+}
+
+const parseAndStore = (page) => {
+  return parsePage(page).then(storeRecs)
+    .then(({ records, page }) => {
+      if (records.length > 0) {
+        console.log('gettin', page + 1)
+        return parseAndStore(page + 1)
+      }
+      return null
+    })
+}
+
 const getAll = () => {
-  const worker = (task, cb) => {
-    getPage(task.page)
-      .then(r => r.text())
-      .then(parseList)
-      .then(r => {
-        sql.addAds(r)
-        liveAds = liveAds.concat(r.map(i => i.id))
-        if (r.length > 0)
-          q.push({ page: task.page + 1 })
-        cb(null, r)
+  return new Promise((resolve, reject) => {
+    parseAndStore(1)
+      .then(() => {
+        return deleteDead(liveAds)
       })
+      .then(() => resolve())
       .catch(err => {
         console.error('error', err)
-        cb(err)
+        reject()
       })
-  }
-  const q = async.queue(worker)
-  q.drain = () => {
-    sql.getAds().then((ads) => {
-      let stored = ads.filter(i => i.time_deleted == null).map(i => i.id)
-      let dead = stored.filter(i => !liveAds.includes(i))
-      let time_deleted = moment().format('YYYY-MM-DD HH:mm:ss')
-      dead.forEach(i => {
-        console.log('deleting ID: ', i)
-        sql.updateAd({id: i, time_deleted}).catch(e => console.error(e))
-      })
-    })
-  }
-  q.push({ page: 1 })
+  })
 }
 
 const parseAd = (body) => {
