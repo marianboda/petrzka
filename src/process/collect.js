@@ -16,28 +16,30 @@ const downloadFile = (url, path) => {
 
 const sql = require('../SqlService')
 
-sql.getAds().then(ads => {
-  const images = ads.map(i => (i.images) ? i.images.split(' ').map(j => i.id + ' ' + j) : [])
-    .reduce((acc, el) => {
-      return acc.concat(el)
-    }, [])
+module.exports = collect = () => {
+  return sql.getAds().then(ads => {
+    const images = ads.map(i => (i.images) ? i.images.split(' ').map(j => i.id + ' ' + j) : [])
+      .reduce((acc, el) => {
+        return acc.concat(el)
+      }, [])
 
-  Promise.mapSeries(images, (item, index) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const id = item.split(' ')[0]
-        const url = item.split(' ')[1]
-        const dir = './static/img/' + id
-        mkdirp(dir)
-        if (fs.existsSync(dir+'/'+hash(url)+'.jpg')) {
-          // console.log(dir+'/'+hash(url)+'.jpg exists')
-          return resolve()
-        }
-        downloadFile(url, dir+'/'+hash(url)+'.jpg').then(() => {
-          console.log(hash(url)+'.jpg done')
-          resolve()
-        })
-      }, 0)
+    return Promise.mapSeries(images, (item, index) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const id = item.split(' ')[0]
+          const url = item.split(' ')[1]
+          const dir = './static/img/' + id
+          mkdirp(dir)
+          if (fs.existsSync(dir+'/'+hash(url)+'.jpg')) {
+            // console.log(dir+'/'+hash(url)+'.jpg exists')
+            return resolve()
+          }
+          downloadFile(url, dir+'/'+hash(url)+'.jpg').then(() => {
+            console.log(hash(url)+'.jpg done')
+            resolve()
+          })
+        }, 0)
+      })
     })
-  }).then(() => console.log('all done'))
-})
+  })
+}
