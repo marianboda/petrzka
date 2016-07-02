@@ -72,9 +72,7 @@ const parseAndStore = (page) => {
 const getAll = () => {
   return new Promise((resolve, reject) => {
     parseAndStore(1)
-      .then(() => {
-        return deleteDead(liveAds)
-      })
+      .then(() => deleteDead(liveAds))
       .then(() => resolve())
       .catch(err => {
         console.error('error', err)
@@ -131,30 +129,33 @@ const scrapeAd = (rec) => {
 }
 
 const getAllDetails = () => {
-  let newAds = []
-  const adScraper = (task, cb) => {
-    scrapeAd(task).then((res) => {
-      newAds.push(res)
-      cb(null)
-    }).catch(e => cb(e))
-  }
-  const adQ = async.queue(adScraper)
-  adQ.drain = () => {
-    console.log('==============================================================')
-    console.log('Stavy:', _.countBy(newAds, i => i.condition))
-    console.log('Ulice:', _.countBy(newAds, i => i.location))
-    console.log('Energie:', _.countBy(newAds, i => i.price_energy))
-    console.log('Plochy:', _.countBy(newAds, i => i.area))
-    console.log('==============================================================')
-  }
-  sql.getAds()
-    .then((ads) => {
-      const unpAds = _.take(ads.filter(i => i.images == null), 100)
-      // const unpAds = ads.filter(i => i.id === 'i2448859')
-      adQ.push(unpAds)
-      console.log(unpAds.length, '/',  ads.length)
-      return null
-    })
+  return new Promise((resolve, reject) => {
+    let newAds = []
+    const adScraper = (task, cb) => {
+      scrapeAd(task).then((res) => {
+        newAds.push(res)
+        cb(null)
+      }).catch(e => cb(e))
+    }
+    const adQ = async.queue(adScraper)
+    adQ.drain = () => {
+      console.log('==============================================================')
+      console.log('Stavy:', _.countBy(newAds, i => i.condition))
+      console.log('Ulice:', _.countBy(newAds, i => i.location))
+      console.log('Energie:', _.countBy(newAds, i => i.price_energy))
+      console.log('Plochy:', _.countBy(newAds, i => i.area))
+      console.log('==============================================================')
+      resolve()
+    }
+    sql.getAds()
+      .then((ads) => {
+        const unpAds = _.take(ads.filter(i => i.images == null), 100)
+        // const unpAds = ads.filter(i => i.id === 'i2448859')
+        adQ.push(unpAds)
+        console.log(unpAds.length, '/',  ads.length)
+        return null
+      })
+  })
 }
 
 module.exports = { getAllDetails, getAll }

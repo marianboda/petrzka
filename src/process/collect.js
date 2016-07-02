@@ -16,13 +16,12 @@ const downloadFile = (url, path) => {
 
 const sql = require('../SqlService')
 
-module.exports = collect = () => {
+const collect = () => {
   return sql.getAds().then(ads => {
     const images = ads.map(i => (i.images) ? i.images.split(' ').map(j => i.id + ' ' + j) : [])
       .reduce((acc, el) => {
         return acc.concat(el)
       }, [])
-
     return Promise.mapSeries(images, (item, index) => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -43,3 +42,5 @@ module.exports = collect = () => {
     })
   })
 }
+
+module.exports = collect
