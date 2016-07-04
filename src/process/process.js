@@ -1,7 +1,7 @@
 const scrape = require('../scrape')
 const collect = require('./collect')
 
-const s = scrape.getAll().then(() => {
+scrape.getAll().then(() => {
   console.log('List parsed')
   console.log('Starting to process all new ones')
   return scrape.getAllDetails()
