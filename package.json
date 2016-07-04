@@ -28,7 +28,7 @@
     "express": "^4.14.0",
     "lodash": "^4.13.1",
     "mkdirp": "^0.5.1",
-    "moment": "^2.13.0",
+    "moment": "^2.14.1",
     "mousetrap": "^1.6.0",
     "node-fetch": "^1.5.3",
     "react": "^15.2.0",
