@@ -5,13 +5,13 @@ const async = require('async')
 const moment = require('moment')
 const sql = require('../../SqlService')
 const { parseList, parseAd } = require('./parser')
+const { getPageUrl } = require('./discover')
 
-const makeUrl = (page = 1) => {
-  const url = 'http://www.nehnutelnosti.sk/bratislava-v-petrzalka/3-izbove-byty/prenajom'
-  if (page === 1)
-    return url
-  return `${url}?p[page]=${page}`
-}
+const makeUrl = (page = 1) => getPageUrl({
+  location: 'bratislava-v-petrzalka',
+  property: '3-izbove-byty',
+  type: 'prenajom',
+}, page).url
 
 const getPage = (page) => fetch(makeUrl(page))
 
