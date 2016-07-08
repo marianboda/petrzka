@@ -39,17 +39,17 @@ const parsePage = (page) => {
 
 const storeRecs = (res) => {
   const { records, page } = res
-  console.log(records.map(i => i.id).join(', '))
+  console.log(' - ', records.length, ' records')
   sql.addAds(records)
   liveAds = liveAds.concat(records.map(i => i.id))
   return { records, page }
 }
 
 const parseAndStore = (page) => {
+  console.log('getting page: ', page)
   return parsePage(page).then(storeRecs)
     .then(({ records, page }) => {
       if (records.length > 0) {
-        console.log('gettin', page + 1)
         return parseAndStore(page + 1)
       }
       return null
