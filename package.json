@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "scrape": "node src/process/process; node src/process/collect",
+    "scrape": "node src/scrape",
     "init": "rm -f db.sqlite; sqlite3 db.sqlite < scripts/dbschema.sql",
     "server": "nodemon src/server.js",
     "watch": "webpack --watch"

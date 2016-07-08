@@ -1,3 +1,10 @@
-const { getAll, getAllDetails } = require('./scrapers/nehnutelnosti')
+const scraper = require('./scrapers/nehnutelnosti')
+const collect = require('./process/collect')
 
-module.exports = { getAll, getAllDetails }
+scraper.discover().then(() => {
+  console.log('List parsed')
+  console.log('Starting to process all new ones')
+  return scraper.scrape()
+}).then(collect)
+.then(() => console.log('all done'))
+.catch(e => console.error(e))

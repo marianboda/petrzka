@@ -56,7 +56,7 @@ const parseAndStore = (page) => {
     })
 }
 
-const getAll = () => {
+const discover = () => {
   return new Promise((resolve, reject) => {
     parseAndStore(1)
       .then(() => deleteDead(liveAds))
@@ -88,7 +88,7 @@ const scrapeAd = (rec) => {
   return p
 }
 
-const getAllDetails = () => {
+const scrape = () => {
   return new Promise((resolve, reject) => {
     const newAds = []
     const adScraper = (task, cb) => {
@@ -118,4 +118,4 @@ const getAllDetails = () => {
   })
 }
 
-module.exports = { getAllDetails, getAll }
+module.exports = { scrape, discover }
