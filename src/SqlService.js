@@ -1,8 +1,9 @@
-const Promise = require('bluebird')
-const SQL = require('sqlite3')
-const moment = require('moment')
+import Promise from 'bluebird'
+import SQL from 'sqlite3'
+import moment from 'moment'
+import { isIterable } from './utils'
+
 const db = new SQL.Database('./db.sqlite')
-const { isIterable } = require('./utils')
 const run = Promise.promisify(db.run, { context: db })
 const all = Promise.promisify(db.all, { context: db })
 
@@ -12,7 +13,6 @@ const SQLService = {
     const vals = keys.map(i => rec[i])
     const prep = `INSERT INTO ad (${keys.join(', ')}) VALUES (${Array(keys.length).fill('?').join(', ')})`
     return run(prep, vals)
-
   },
 
   add: (records) => {
@@ -22,7 +22,6 @@ const SQLService = {
         console.error(e)
       return 0
     })
-
     return Promise.mapSeries(recs, fn)
   },
 
@@ -46,4 +45,4 @@ const SQLService = {
   },
 }
 
-module.exports = SQLService
+export default SQLService

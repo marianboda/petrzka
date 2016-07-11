@@ -1,5 +1,5 @@
-const scraper = require('./scrapers/nehnutelnosti')
-const collect = require('./process/collect')
+import * as scraper from './scrapers/nehnutelnosti'
+import collect from './process/collect'
 
 const harvest = {
   scraper: 'nehnutelnosti',

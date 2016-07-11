@@ -1,6 +1,7 @@
-const express = require('express')
+import express from 'express'
+import sql from './SqlService'
+
 const app = express()
-const sql = require('./SqlService')
 
 app.get('/api/ads', (req, res) => {
   sql.getLiveAds().then((r) => {

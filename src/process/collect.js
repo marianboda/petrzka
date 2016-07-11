@@ -1,8 +1,9 @@
-const fetch = require('node-fetch')
-const fs = require('fs')
-const Promise = require('bluebird')
-const mkdirp = require('mkdirp')
-const hash = require('../utils').hash
+import fetch from 'node-fetch'
+import fs from 'fs'
+import Promise from 'bluebird'
+import mkdirp from 'mkdirp'
+import { hash } from '../utils'
+import sql from '../SqlService'
 
 const downloadFile = (url, path) => {
   return fetch(url)
@@ -12,11 +13,7 @@ const downloadFile = (url, path) => {
   .catch(e => console.error(e))
 }
 
-// module.exports = downloadFile
-
-const sql = require('../SqlService')
-
-const collect = () => {
+export const collect = () => {
   return sql.getAds().then(ads => {
     const images = ads.map(i => (i.images) ? i.images.split(' ').map(j => i.id + ' ' + j) : [])
       .reduce((acc, el) => {
@@ -42,5 +39,3 @@ const collect = () => {
     })
   })
 }
-
-module.exports = collect

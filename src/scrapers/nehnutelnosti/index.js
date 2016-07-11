@@ -1,16 +1,15 @@
-const fetch = require('node-fetch')
-const Promise = require('bluebird')
-const _ = require('lodash')
-const async = require('async')
-const moment = require('moment')
-const sql = require('../../SqlService')
-const { parseList, parseAd } = require('./parser')
-const { timestamp } = require('./../../utils')
+import fetch from 'node-fetch'
+import Promise from 'bluebird'
+import _ from 'lodash'
+import async from 'async'
+import moment from 'moment'
+import sql from '../../SqlService'
+import { parseList, parseAd } from './parser'
+import { timestamp } from './../../utils'
 
 const makeUrl = (harvest, page = 1) => {
   const { location, property, type } = harvest.parameters
   const url = `http://www.nehnutelnosti.sk/${location}/${property}/${type}`
-  console.log(url)
   if (page === 1)
     return url
   return `${url}?p[page]=${page}`
@@ -59,7 +58,7 @@ const parseAndStore = (harvest, page) => {
     })
 }
 
-const discover = (harvest) => {
+export const discover = (harvest) => {
   return new Promise((resolve, reject) => {
     parseAndStore(harvest, 1)
       .then(() => deleteDead(liveAds))
@@ -70,7 +69,6 @@ const discover = (harvest) => {
       })
   })
 }
-
 
 const scrapeAd = (rec) => {
   const p = new Promise((resolve, reject) => {
@@ -91,7 +89,7 @@ const scrapeAd = (rec) => {
   return p
 }
 
-const scrape = () => {
+export const scrape = () => {
   return new Promise((resolve, reject) => {
     const newAds = []
     const adScraper = (task, cb) => {
@@ -120,5 +118,3 @@ const scrape = () => {
       })
   })
 }
-
-module.exports = { scrape, discover }

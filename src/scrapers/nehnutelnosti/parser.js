@@ -1,7 +1,7 @@
-const cheerio = require('cheerio')
-const removeDia = require('diacritics').remove
+import cheerio from 'cheerio'
+import { remove as removeDia } from 'diacritics'
 
-const parseList = (body) => {
+export const parseList = (body) => {
   const $ = cheerio.load(body)
   const a = $('.inzerat')
   const list = a.map((i, el) => {
@@ -14,7 +14,7 @@ const parseList = (body) => {
   return list.toArray()
 }
 
-const parseAd = (body) => {
+export const parseAd = (body) => {
   const $ = cheerio.load(body)
   const price = $('#data-price').text().replace('\r\n', '').replace('\r\n', '')
     .replace(/ /g, '').replace(/[^0-9]/g, '')
@@ -40,5 +40,3 @@ const parseAd = (body) => {
   return { price, price_energy: energy, location: street, images,
     condition, area, description, agency, agent, type: '3bdr-apartment' }
 }
-
-module.exports = { parseAd, parseList }
