@@ -2,22 +2,28 @@ const Promise = require('bluebird')
 const SQL = require('sqlite3')
 const moment = require('moment')
 const db = new SQL.Database('./db.sqlite')
+const { isIterable } = require('./utils')
 const run = Promise.promisify(db.run, { context: db })
 const all = Promise.promisify(db.all, { context: db })
 
 const SQLService = {
-  addAd: (rec) => {
-    const prep = 'INSERT INTO ad (id, title, link, time_added) VALUES (?,?,?,?)'
-    return run(prep, [rec.id, rec.title, rec.link, moment().format('YYYY-MM-DD HH:mm:ss')])
+  addOne: (rec) => {
+    const keys = Object.keys(rec)
+    const vals = keys.map(i => rec[i])
+    const prep = `INSERT INTO ad (${keys.join(', ')}) VALUES (${Array(keys.length).fill('?').join(', ')})`
+    return run(prep, vals)
+
   },
 
-  addAds: (recs) => {
-    recs.forEach(i => {
-      SQLService.addAd(i).catch(e => {
-        if (e.code !== 'SQLITE_CONSTRAINT')
-          console.error(e)
-      })
+  add: (records) => {
+    const recs = isIterable ? records : [records]
+    const fn = i => SQLService.addOne(i).catch(e => {
+      if (e.code !== 'SQLITE_CONSTRAINT')
+        console.error(e)
+      return 0
     })
+
+    return Promise.mapSeries(recs, fn)
   },
 
   updateAd: (rec) => {

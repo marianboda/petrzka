@@ -5,15 +5,18 @@ const async = require('async')
 const moment = require('moment')
 const sql = require('../../SqlService')
 const { parseList, parseAd } = require('./parser')
+const { timestamp } = require('./../../utils')
 
-const makeUrl = (page = 1) => {
-  const url = 'http://www.nehnutelnosti.sk/bratislava-v-petrzalka/3-izbove-byty/prenajom'
+const makeUrl = (harvest, page = 1) => {
+  const { location, property, type } = harvest.parameters
+  const url = `http://www.nehnutelnosti.sk/${location}/${property}/${type}`
+  console.log(url)
   if (page === 1)
     return url
   return `${url}?p[page]=${page}`
 }
 
-const getPage = (page) => fetch(makeUrl(page))
+const getPage = (harvest, page) => fetch(makeUrl(harvest, page))
 
 let liveAds = []
 
@@ -21,7 +24,7 @@ const deleteDead = (live) => {
   sql.getAds().then((ads) => {
     const stored = ads.filter(i => i.time_deleted == null).map(i => i.id)
     const dead = stored.filter(i => !live.includes(i))
-    const timeDeleted = moment().format('YYYY-MM-DD HH:mm:ss')
+    const timeDeleted = timestamp()
     dead.forEach(i => {
       console.log('deleting ID: ', i)
       sql.updateAd({ id: i, time_deleted: timeDeleted })
@@ -30,8 +33,8 @@ const deleteDead = (live) => {
   })
 }
 
-const parsePage = (page) => {
-  return getPage(page)
+const parsePage = (harvest, page) => {
+  return getPage(harvest, page)
     .then(r => r.text())
     .then(parseList)
     .then((r) => ({ records: r, page }))
@@ -40,25 +43,25 @@ const parsePage = (page) => {
 const storeRecs = (res) => {
   const { records, page } = res
   console.log(' - ', records.length, ' records')
-  sql.addAds(records)
+  sql.add(records.map(i => ({...i, time_added: timestamp()})))
   liveAds = liveAds.concat(records.map(i => i.id))
   return { records, page }
 }
 
-const parseAndStore = (page) => {
+const parseAndStore = (harvest, page) => {
   console.log('getting page: ', page)
-  return parsePage(page).then(storeRecs)
+  return parsePage(harvest, page).then(storeRecs)
     .then(({ records, page }) => {
       if (records.length > 0) {
-        return parseAndStore(page + 1)
+        return parseAndStore(harvest, page + 1)
       }
       return null
     })
 }
 
-const discover = () => {
+const discover = (harvest) => {
   return new Promise((resolve, reject) => {
-    parseAndStore(1)
+    parseAndStore(harvest, 1)
       .then(() => deleteDead(liveAds))
       .then(() => resolve())
       .catch(err => {
