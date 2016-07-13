@@ -38,3 +38,11 @@ CREATE TABLE "house"(
   "rating" Integer DEFAULT 0,
   "time_deleted" Text
 );
+
+CREATE TABLE "harvests"(
+  "id" Text UNIQUE,
+  "title" Text,
+  "scraper" Text,
+  "parameters" Text,
+  "time_completed" Text
+);
