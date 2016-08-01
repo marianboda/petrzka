@@ -1,5 +1,5 @@
 import * as scraper from './scrapers/nehnutelnosti'
-import collect from './process/collect'
+import { collect } from './process/collect'
 
 const harvest = {
   scraper: 'nehnutelnosti',
