@@ -10,7 +10,16 @@ const harvest = {
   },
 }
 
-scraper.discover(harvest).then(() => {
+const houseHarvest = {
+  scraper: 'nehnutelnosti',
+  parameters: {
+    location: 'bernolakovo',
+    property: 'rodinne-domy',
+    type: 'predaj'
+  }
+}
+
+scraper.discover(houseHarvest).then(() => {
   console.log('List parsed')
   console.log('Starting to process all new ones')
   return scraper.scrape()
