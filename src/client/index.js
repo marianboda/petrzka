@@ -12,7 +12,7 @@ const adDetailStyles = { flex: '1 1 300px', height: '100%', overflow: 'auto', pa
 
 const App = React.createClass({
   getInitialState() {
-    return { ads: [], selectedId: 'i2477748' }
+    return { ads: [], selectedId: 'i2477748', filter: { deleted: false } }
   },
   componentWillUpdate(nextProps, nextState) {
     const node = this.refs.adList
@@ -77,7 +77,9 @@ const App = React.createClass({
       </div>)
     }
 
-    const adElements = ads.map(i => (<AdListRenderer
+    const adElements = ads
+      .filter((i) => this.state.filter.deleted || i.time_deleted < '2015')
+      .map(i => (<AdListRenderer
         ref={i.id}
         data={i}
         onClick={((id) => () => this.clickHandler(id))(i.id)}
@@ -86,6 +88,7 @@ const App = React.createClass({
 
     return (<div style={containerStyles}>
       <div ref="adList" style={adListStyles}>
+        <div>[{adElements.length}] <input type="checkbox" checked={this.state.filter.deleted} onChange={() => this.setState({filter: {deleted: !this.state.filter.deleted}})}/> deleted</div>
         {adElements}
       </div>
       {detailPane}
