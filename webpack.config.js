@@ -1,5 +1,6 @@
 module.exports = {
   entry: "./src/client/index.js",
+  devtool: "inline-source-map",
   output: {
     path: __dirname,
     filename: "static/bundle.js",
