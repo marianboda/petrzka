@@ -8,7 +8,8 @@
     "scrape": "babel-node src/scrape.js",
     "init": "mv db.sqlite db_$(date +%Y-%m-%d_%H-%M-%S).sqlite; sqlite3 db.sqlite < scripts/dbschema.sql",
     "server": "nodemon --exec babel-node --presets=es2015 src/server.js",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",

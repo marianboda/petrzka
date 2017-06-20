@@ -6,10 +6,19 @@ Scraper for nehnutelnosti.sk
 
 `npm i`
 
-Init SQLite DB
+Init SQLite DB:
 
 `npm run init`
 
-Run scraper
+Run scraper:
 
 `npm run scrape`
+
+Run web server to view scraped data:
+
+```
+npm run build
+npm run server
+```
+
+[http://localhost:3000](http://localhost:3000)
