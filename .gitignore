@@ -2,3 +2,6 @@ node_modules
 db.sqlite
 static/bundle.js
 static/img
+yarn.lock
+db_*
+.DS_Store
