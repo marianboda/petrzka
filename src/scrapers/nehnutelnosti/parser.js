@@ -16,7 +16,7 @@ export const parseList = (body) => {
 
 export const parseAd = (body) => {
   const $ = cheerio.load(body)
-  const price = $('#data-price').text().replace('\r\n', '').replace('\r\n', '')
+  const price = $('.price--info .price--main').text().replace('\r\n', '').replace('\r\n', '')
     .replace(/ /g, '').replace(/[^0-9]/g, '')
   let energy = $('.energy').text()
   if (energy === 'Zahrnuté v cene')
