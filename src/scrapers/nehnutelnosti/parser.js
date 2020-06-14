@@ -3,7 +3,7 @@ import { remove as removeDia } from 'diacritics'
 
 export const parseList = (body) => {
   const $ = cheerio.load(body)
-  const a = $('.inzerat')
+  const a = $('.advertisement-item')
   const list = a.map((i, el) => {
     const id = el.attribs.id
     const titleEl = $(el).find('h2 a')[0]
