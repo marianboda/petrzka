@@ -37,11 +37,11 @@ const SQLService = {
   },
 
   getAds: () => {
-    return all('SELECT * FROM ad ORDER BY time_added DESC, id DESC')
+    return all('SELECT * FROM ad ORDER BY id DESC')
   },
 
   getLiveAds: () => {
-    return all('SELECT * FROM ad ORDER BY time_added DESC, id DESC')
+    return all('SELECT * FROM ad ORDER BY id DESC')
   },
 }
 
