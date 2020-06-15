@@ -2,6 +2,7 @@ CREATE TABLE "ad"(
   "id" Text UNIQUE,
   "title" Text,
   "link" Text,
+  "slug" Text,
   "description" Text,
   "area" Real,
   "property_area" Real,

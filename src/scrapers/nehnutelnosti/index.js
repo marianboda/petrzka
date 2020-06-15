@@ -2,9 +2,9 @@ import fetch from 'node-fetch'
 import Promise from 'bluebird'
 import _ from 'lodash'
 import async from 'async'
-import moment from 'moment'
+import { omit } from 'ramda'
 import sql from '../../SqlService'
-import { parseList, parseAd } from './parser'
+import { parseList, parseAd, parseGallery } from './parser'
 import { timestamp } from './../../utils'
 
 const makeUrl = (harvest, page = 1) => {
@@ -15,7 +15,14 @@ const makeUrl = (harvest, page = 1) => {
   return `${url}?p[page]=${page}`
 }
 
-const getPage = (harvest, page) => fetch(makeUrl(harvest, page))
+const getPage = (harvest, page) => {
+  return new Promise((resolve, reject) => {
+    fetch(makeUrl(harvest, page)).then((response) => {
+      if (response.ok) resolve(response)
+      reject(response)
+    })
+  })
+}
 
 let liveAds = []
 
@@ -64,10 +71,20 @@ export const discover = (harvest) => {
       .then(() => deleteDead(liveAds))
       .then(() => resolve())
       .catch(err => {
-        console.error('error', err)
+        console.error('discovery error', err)
         reject()
       })
   })
+}
+
+export const discoverImages = (ad) => {
+  return fetch(ad.galleryUrl).then(r => r.text()).then((body) => {
+    const images = parseGallery(body).map(i => i.src)
+    return {
+      ...omit(['galleryUrl'], ad),
+      images: [...ad.images, ...images].join(' '),
+    }
+  }).catch(e => console.log(e))
 }
 
 const scrapeAd = (rec) => {
@@ -77,11 +94,14 @@ const scrapeAd = (rec) => {
     .then(body => {
       const ad = parseAd(body)
       ad.id = rec.id
-      console.log(ad.id)
-      sql.updateAd(ad)
-      resolve(ad)
+      ad.slug = rec.slug
+
+      discoverImages(ad).then((ad) => {
+        sql.updateAd(ad)
+        resolve(ad)
+      })
     })
-    .catch(e => {
+    .catch((e) => {
       console.error(e)
       reject(e)
     })

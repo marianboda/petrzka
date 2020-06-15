@@ -1,5 +1,9 @@
 import cheerio from 'cheerio'
-import { remove as removeDia } from 'diacritics'
+
+const getSlug = url => url
+  .replace('https://www.nehnutelnosti.sk/', '')
+  .replace(/^[0-9]+/, '')
+  .replace(/\//g, '')
 
 export const parseList = (body) => {
   const $ = cheerio.load(body)
@@ -9,9 +13,16 @@ export const parseList = (body) => {
     const titleEl = $(el).find('h2 a')[0]
     const link = titleEl.attribs.href
     const title = $(titleEl).text()
-    return { id, title, link }
+    const slug = getSlug(link)
+    return { id, title, link, slug }
   })
   return list.toArray()
+}
+
+export const parseGallery = (body) => {
+  const $ = cheerio.load(body)
+  const dataJson = $('#advertisement-gallery-wrapper div[data-gallery-photos]').attr('data-gallery-photos')
+  return JSON.parse(dataJson)
 }
 
 export const parseAd = (body) => {
@@ -26,17 +37,32 @@ export const parseAd = (body) => {
   else
     energy = Number(energy.replace(/[^0-9]/g, ''))
 
-  const street = removeDia($('.street').text()).replace(/[,]?\s[0-9]+$/g, '').toLowerCase().trim()
-  const condition = removeDia($('span:contains("Stav")').next().text()).toLowerCase()
-  let area = $('span:contains("Úžitková plocha")').next().text().replace(' m²', '')
-  area = (area === '') ? 0 : Number(area)
-  const description = $('.popis').text().trim()
-  const agency = $('.kontaktne-udaje a').first().text().trim()
-  const agent = $('.brokerContacts > .bold').text().trim()
-  const image = $('#galeryElementJS > a').first().attr('data-href')
-  const otherImages = $('#male a').map((i, el) => el.attribs['data-href']).toArray()
-  const images = [].concat(image, otherImages).join(' ')
+  const street = $('.top--info-location').text().replace(/\s+/g, ' ').replace(', okres Žilina', '').trim()
 
-  return { price, price_energy: energy, location: street, images,
-    condition, area, description, agency, agent, type: '3bdr-apartment' }
+  const condition = $('.parameter--info div:contains("Stav") strong').text()
+  let area = $('.parameter--info div:contains("Úžit. plocha") strong').text().replace(' m2', '')
+  area = (area === '') ? 0 : Number(area)
+  const description = $('.text-inner').text().trim()
+  const agency = $('.agency-name').attr('title')
+  const agent = $('.broker-name').text().trim()
+  const image = $('#photo-gallery-preview > data-src').attr('srcset')
+  const galleryUrl = $('picture[data-gallery-url]').attr('data-gallery-url')
+
+  const images = [image]
+
+  return {
+    price,
+    price_energy:
+    energy,
+    location:
+    street,
+    images,
+    condition,
+    area,
+    description,
+    agency,
+    agent,
+    galleryUrl,
+    type: '3bdr-apartment'
+  }
 }

@@ -64,7 +64,7 @@ const App = React.createClass({
     let images = []
     let detailPane = null
     if (selectedAd) {
-      const images = selectedAd.images.split(' ')
+      const images = selectedAd.images ? selectedAd.images.split(' ') : []
       detailPane = (!selectedAd) ? null : (<div style={adDetailStyles}>
         <h2><a href={selectedAd.link} target="_blank">{selectedAd.title}</a></h2>
         <div>{selectedAd.description}</div>
