@@ -11,7 +11,7 @@ export default React.createClass({
   render() {
     const { data, selected, onClick } = this.props
     let style = { ...defStyle }
-    let days = moment().diff(moment(data.time_added, 'YYYY-MM-DD HH:mm:ss'), 'days')
+    let days = moment().diff(moment(data.date_updated, 'YYYY-MM-DD'), 'days')
     if (days == 0) {
       days = 'today'
     } else if (days == 1) {

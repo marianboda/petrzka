@@ -17,7 +17,8 @@ CREATE TABLE "ad"(
   "agent" Text,
   "images" Text,
   "rating" Integer DEFAULT 0,
-  "time_deleted" Text
+  "time_deleted" Text,
+  "date_updated" Text
 );
 
 CREATE TABLE "house"(

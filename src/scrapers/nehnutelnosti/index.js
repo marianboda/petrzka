@@ -90,7 +90,13 @@ export const discoverImages = (ad) => {
 const scrapeAd = (rec) => {
   const p = new Promise((resolve, reject) => {
     console.log(rec.link)
-    fetch(rec.link).then(r => r.text())
+    fetch(rec.link)
+    .then(r => {
+      console.log('response:', r.status)
+      if (!r.ok) return Promise.reject(r)
+      return r
+    })
+    .then(r => r.text())
     .then(body => {
       const ad = parseAd(body)
       ad.id = rec.id

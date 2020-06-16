@@ -1,4 +1,5 @@
 import cheerio from 'cheerio'
+import moment from 'moment'
 
 const getSlug = url => url
   .replace('https://www.nehnutelnosti.sk/', '')
@@ -16,6 +17,9 @@ export const parseList = (body) => {
     const slug = getSlug(link)
     return { id, title, link, slug }
   })
+  if (list.toArray().length === 0) {
+    console.log('zero recs?', body)
+  }
   return list.toArray()
 }
 
@@ -48,14 +52,17 @@ export const parseAd = (body) => {
   const image = $('#photo-gallery-preview > data-src').attr('srcset')
   const galleryUrl = $('picture[data-gallery-url]').attr('data-gallery-url')
 
+  const dateUpdatedRaw = $('.info--box-header .date').text().replace('Dátum aktualizácie: ', '').trim()
+
+  const date_updated = moment(dateUpdatedRaw, 'DD. MM. YYYY').format('YYYY-MM-DD')
+
   const images = [image]
 
   return {
     price,
     price_energy:
     energy,
-    location:
-    street,
+    location: street,
     images,
     condition,
     area,
@@ -63,6 +70,7 @@ export const parseAd = (body) => {
     agency,
     agent,
     galleryUrl,
-    type: '3bdr-apartment'
+    type: '3bdr-apartment',
+    date_updated,
   }
 }
