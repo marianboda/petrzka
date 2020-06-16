@@ -28,7 +28,7 @@ const houseHarvest = {
   }
 }
 
-scraper.discover(zilinaAptHarvest).then(() => {
+scraper.discover(houseHarvest).then(() => {
   console.log('List parsed')
   console.log('Starting to process all new ones')
   return scraper.scrape()
