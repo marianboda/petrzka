@@ -92,7 +92,6 @@ const scrapeAd = (rec) => {
     console.log(rec.link)
     fetch(rec.link)
     .then(r => {
-      console.log('response:', r.status)
       if (!r.ok) return Promise.reject(r)
       return r
     })
