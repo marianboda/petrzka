@@ -136,7 +136,8 @@ export const scrape = () => {
     }
     sql.getAds()
       .then((ads) => {
-        const unpAds = _.take(ads.filter(i => i.images == null), 100)
+        const filteredAds = ads.filter(i => i.images == null && i.time_deleted == null)
+        const unpAds = _.take(filteredAds, 100)
         // const unpAds = ads.filter(i => i.id === 'i2448859')
         adQ.push(unpAds)
         console.log(unpAds.length, '/', ads.length)
