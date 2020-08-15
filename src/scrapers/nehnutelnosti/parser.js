@@ -8,6 +8,12 @@ const getSlug = url => url
 
 export const parseList = (body) => {
   const $ = cheerio.load(body)
+  const bodyText = $('body').text().trim()
+  if (bodyText === '') {
+    console.log('empty body')
+    process.exit()
+  }
+
   const a = $('.advertisement-item')
   const list = a.map((i, el) => {
     const id = el.attribs.id
@@ -18,7 +24,7 @@ export const parseList = (body) => {
     return { id, title, link, slug }
   })
   if (list.toArray().length === 0) {
-    console.log('zero recs?', body)
+    console.log('zero recs')
   }
   return list.toArray()
 }
@@ -54,7 +60,7 @@ export const parseAd = (body) => {
 
   const dateUpdatedRaw = $('.info--box-header .date').text().replace('Dátum aktualizácie: ', '').trim()
 
-  const date_updated = moment(dateUpdatedRaw, 'DD. MM. YYYY').format('YYYY-MM-DD')
+  const dateUpdated = moment(dateUpdatedRaw, 'DD. MM. YYYY').format('YYYY-MM-DD')
 
   const images = [image]
 
@@ -71,6 +77,6 @@ export const parseAd = (body) => {
     agent,
     galleryUrl,
     type: '3bdr-apartment',
-    date_updated,
+    date_updated: dateUpdated,
   }
 }
